@@ -1,0 +1,42 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+IMPORTABLE EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.10068768863284816 0.4852027699112893 -0.8685852067748949 0.4690066985671808
+  position -1.3087136294136736 0.26453377571564446 0.5450895079887208
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+E-puck {
+  hidden position_0_0 69.19331479685772
+  hidden position_0_1 109.3423600726093
+  hidden translation_1 0 0.025999999999999992 0.02
+  hidden rotation_1 0 -1 0 6.204908889297315
+  hidden translation_2 0 -0.026000000000000013 0.02
+  hidden rotation_2 0 -1 0 3.754975456623261
+  translation 0.08869681164030851 -0.2059748215397101 -6.394218218238809e-05
+  rotation -0.0007132729083494234 -0.0005965366022755649 -0.9999995676928268 1.7485761677222238
+  controller "penghentian_Robot_dengan_sensor"
+  controllerArgs [
+    ""
+  ]
+}
+RectangleArena {
+  translation -0.0129408 -0.048296 0
+  rotation 0 0 1 -0.261795307179586
+  floorSize 2 2
+}
+Wall {
+  translation 0.0244951 -0.295858 0
+  rotation 0 0 -1 1.8326
+  size 0.1 0.2 0.1
+}
