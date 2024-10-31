@@ -1,0 +1,14 @@
+sudo apt install git
+pip install conan==1.59.0
+sudo apt install python-is-python3 \
+ros-noetic-amcl \
+ros-noetic-base-local-planner \
+ros-noetic-map-server \
+ros-noetic-move-base \
+ros-noetic-navfn \
+libgoogle-glog-dev
+git clone https://github.com/ai-winter/ros_motion_planning.git
+cd ~/ros_motion_planing
+cd scripts/
+./build.sh
+./main.sh
