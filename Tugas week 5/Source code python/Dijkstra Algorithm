@@ -1,0 +1,58 @@
+from collections import defaultdict
+import heapq
+
+class Graph:
+    def __init__(self):
+        self.graph = defaultdict(list)
+        
+    def tambah_edge(self, dari, ke, biaya):
+        self.graph[dari].append((ke, biaya))
+        
+    def dijkstra(self, titik_awal, titik_tujuan):
+        jarak = {node: float('infinity') for node in self.graph}
+        jarak[titik_awal] = 0
+        
+        jalur = {node: [] for node in self.graph}
+        jalur[titik_awal] = [titik_awal]
+        
+        pq = [(0, titik_awal)]
+        
+        while pq:
+            jarak_saat_ini, node_saat_ini = heapq.heappop(pq)
+            
+            if node_saat_ini == titik_tujuan:
+                return jarak[titik_tujuan], jalur[node_saat_ini]
+            
+            if jarak_saat_ini > jarak[node_saat_ini]:
+                continue
+                
+            for tetangga, biaya in self.graph[node_saat_ini]:
+                jarak_baru = jarak_saat_ini + biaya
+                
+                if jarak_baru < jarak.get(tetangga, float('infinity')):
+                    jarak[tetangga] = jarak_baru
+                    jalur[tetangga] = jalur[node_saat_ini] + [tetangga]
+                    heapq.heappush(pq, (jarak_baru, tetangga))
+        
+        return float('infinity'), []
+
+def tampilkan_hasil(biaya, jalur):
+    if biaya == float('infinity'):
+        print("Tidak ditemukan jalur ke titik tujuan")
+    else:
+        print(f"Biaya total: {biaya}")
+        print(f"Jalur terpendek: {' -> '.join(map(str, jalur))}")
+
+if __name__ == "__main__":
+    g = Graph()
+    
+    g.tambah_edge('A', 'B', 4)
+    g.tambah_edge('A', 'C', 2)
+    g.tambah_edge('B', 'D', 3)
+    g.tambah_edge('C', 'B', 1)
+    g.tambah_edge('C', 'D', 5)
+    g.tambah_edge('D', 'E', 2)
+    g.tambah_edge('B', 'E', 7)
+    
+    biaya, jalur = g.dijkstra('A', 'E')
+    tampilkan_hasil(biaya, jalur)
