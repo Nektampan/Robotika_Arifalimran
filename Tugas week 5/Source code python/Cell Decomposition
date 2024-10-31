@@ -1,0 +1,183 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import splprep, splev
+from queue import Queue
+
+class SmoothRobotPathfinder:
+    def __init__(self, width=50, height=50, cell_size=1):
+        """
+        Inisialisasi ruang navigasi robot dengan jalur mulus
+        
+        Parameters:
+        - width: lebar ruangan
+        - height: tinggi ruangan
+        - cell_size: ukuran sel
+        """
+        self.width = width
+        self.height = height
+        self.cell_size = cell_size
+        
+        # Buat grid untuk representasi ruangan
+        self.grid = np.zeros((height, width), dtype=int)
+    
+    def add_obstacle(self, x, y, obstacle_width, obstacle_height, obstacle_type='rectangle'):
+        """
+        Menambahkan rintangan dengan berbagai bentuk
+        
+        Parameters:
+        - x, y: koordinat awal rintangan
+        - obstacle_width: lebar rintangan
+        - obstacle_height: tinggi rintangan
+        - obstacle_type: bentuk rintangan
+        """
+        if obstacle_type == 'rectangle':
+            x_start, x_end = x, x + obstacle_width
+            y_start, y_end = y, y + obstacle_height
+            self.grid[y_start:y_end, x_start:x_end] = 1
+        elif obstacle_type == 'circular':
+            # Membuat rintangan berbentuk lingkaran
+            center_x, center_y = x, y
+            radius = max(obstacle_width, obstacle_height) // 2
+            for y_coord in range(self.height):
+                for x_coord in range(self.width):
+                    if ((x_coord - center_x)**2 + (y_coord - center_y)**2) <= radius**2:
+                        self.grid[y_coord, x_coord] = 1
+    
+    def is_valid_cell(self, x, y):
+        """
+        Memeriksa apakah sel valid dan bebas rintangan
+        """
+        return (0 <= x < self.width and 
+                0 <= y < self.height and 
+                self.grid[int(y), int(x)] == 0)
+    
+    def find_path(self, start, goal):
+        """
+        Mencari jalur terpendek dengan BFS
+        """
+        directions = [
+            (0, 1), (1, 0), (0, -1), (-1, 0),  # Dasar
+            (1, 1), (-1, 1), (1, -1), (-1, -1)  # Diagonal
+        ]
+        
+        queue = Queue()
+        queue.put(start)
+        
+        visited = set([start])
+        parent = {start: None}
+        
+        while not queue.empty():
+            current = queue.get()
+            
+            if current == goal:
+                # Rekonstruksi jalur
+                path = []
+                while current:
+                    path.append(current)
+                    current = parent[current]
+                return path[::-1]
+            
+            for dx, dy in directions:
+                next_cell = (current[0] + dx, current[1] + dy)
+                
+                if (self.is_valid_cell(next_cell[0], next_cell[1]) and 
+                    next_cell not in visited):
+                    queue.put(next_cell)
+                    visited.add(next_cell)
+                    parent[next_cell] = current
+        
+        return None
+    
+    def smooth_path(self, path, smoothing_factor=0.3):
+        """
+        Menghaluskan jalur menggunakan spline interpolation
+        
+        Parameters:
+        - path: jalur yang ditemukan
+        - smoothing_factor: faktor penghalusan jalur
+        
+        Returns:
+        - Jalur yang dihaluskan
+        """
+        if len(path) < 3:
+            return path
+        
+        # Ekstrak koordinat x dan y
+        x = [p[0] for p in path]
+        y = [p[1] for p in path]
+        
+        # Interpolasi spline
+        tck, u = splprep([x, y], s=smoothing_factor)
+        
+        # Buat jalur halus
+        u_new = np.linspace(u.min(), u.max(), 100)
+        x_new, y_new = splev(u_new, tck)
+        
+        # Filter jalur yang valid
+        smooth_path = []
+        for x, y in zip(x_new, y_new):
+            if self.is_valid_cell(x, y):
+                smooth_path.append((x, y))
+        
+        return smooth_path
+    
+    def visualize_path(self, path=None, smooth_path=None):
+        """
+        Memvisualisasikan grid, jalur asli, dan jalur mulus
+        """
+        plt.figure(figsize=(12, 10))
+        plt.imshow(self.grid, cmap='binary')
+        plt.title('Smooth Robot Path Navigation')
+        plt.xlabel('X Coordinate')
+        plt.ylabel('Y Coordinate')
+        
+        # Gambar jalur asli
+        if path:
+            path_x = [p[0] for p in path]
+            path_y = [p[1] for p in path]
+            plt.plot(path_x, path_y, 'g--', linewidth=2, label='Original Path')
+            plt.scatter(path_x, path_y, color='green', s=30)
+        
+        # Gambar jalur mulus
+        if smooth_path:
+            smooth_x = [p[0] for p in smooth_path]
+            smooth_y = [p[1] for p in smooth_path]
+            plt.plot(smooth_x, smooth_y, 'r-', linewidth=3, label='Smooth Path')
+            plt.scatter(smooth_x, smooth_y, color='red', s=20)
+        
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
+def main():
+    # Buat ruangan navigasi
+    pathfinder = SmoothRobotPathfinder(width=50, height=50)
+    
+    # Tambahkan beragam rintangan
+    pathfinder.add_obstacle(5, 5, 3, 3)        # Rintangan persegi 1
+    pathfinder.add_obstacle(15, 10, 4, 4)      # Rintangan persegi 2
+    pathfinder.add_obstacle(25, 20, 5, 5)      # Rintangan persegi 3
+    pathfinder.add_obstacle(35, 35, 6, 6, 'circular')  # Rintangan lingkaran
+    
+    # Tentukan titik awal dan tujuan
+    start = (2, 2)     # Koordinat awal robot
+    goal = (45, 45)    # Koordinat tujuan robot
+    
+    # Cari jalur
+    path = pathfinder.find_path(start, goal)
+    
+    if path:
+        # Haluskan jalur
+        smooth_path = pathfinder.smooth_path(path)
+        
+        print("Jalur robot ditemukan!")
+        print("Jumlah titik jalur asli:", len(path))
+        print("Jumlah titik jalur mulus:", len(smooth_path))
+        
+        # Visualisasi
+        pathfinder.visualize_path(path, smooth_path)
+    else:
+        print("Tidak ada jalur yang valid.")
+
+if __name__ == "__main__":
+    main()
