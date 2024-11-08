@@ -1,0 +1,6 @@
+prm_params:
+  num_nodes: 100                # Jumlah node acak yang akan dibuat
+  connection_radius: 15          # Radius koneksi untuk menghubungkan node
+  start: [10, 10]                # Titik awal (x, y)
+  goal: [90, 90]                 # Titik tujuan (x, y)
+  map_size: [100, 100]           # Ukuran peta (lebar, tinggi)
