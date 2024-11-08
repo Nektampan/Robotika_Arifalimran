@@ -1,0 +1,7 @@
+<launch>
+    <!-- Set the path to the config file -->
+    <param name="/prm_package/config_path" value="$(find prm_package)/config" />
+
+    <!-- Node definition -->
+    <node name="prm_node" pkg="prm_package" type="prm.py" output="screen"/>
+</launch>
