@@ -1,0 +1,42 @@
+1.(PRM) dengan Visualisasi Matplotlib From Scratch
+# Buat directory untuk workspace ROS
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws
+# Build workspace ROS untuk pertama kali
+catkin_make
+# Sumberkan setup.bash agar ROS mengenali workspace ini
+source devel/setup.bash
+# Pindah ke folder src di dalam workspace
+cd ~/catkin_ws/src
+# Buat package baru bernama prm_package dengan dependensi rospy dan std_msgs
+catkin_create_pkg prm_package rospy std_msgs
+# Build workspace kembali setelah menambahkan package baru
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+# Buat file params.yaml dalam folder config
+nano config/params.yaml
+# Buat file prm.py dalam folder scripts
+nano scripts/prm.py
+# Buat file prm.launch dalam folder launch
+nano launch/prm.launch
+chmod +x scripts/prm.py
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+roslaunch prm_package prm.launch
+2.Simulasi Probabilistic Roadmap (PRM) dengan Visualisasi Rviz
+git clone https://github.com/nishadg246/Probabilistic-Roadmap
+cd Probabilistic-Roadmap/
+catkin_make
+roscore
+source ~/Probabilistic-Roadmap/devel/setup.bash
+rosrun rrt-planning prm
+rviz
+3(RRT) di ROS dengan Visualisasi Rviz
+git clone https://github.com/malintha/rrt-ros
+cd rrt-ros 
+roscore
+source ~/rrt-ros/devel/setup.bash
+rosrun rrt-planning rrt
+rosrun rviz rviz
