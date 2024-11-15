@@ -1,0 +1,19 @@
+1. mkdir -p ~/turtle_pong_ws/src
+2. cd ~/turtle_pong_ws
+3. catkin_make
+4. cd ~/turtle_pong_ws/src
+5. catkin_create_pkg turtle_pong rospy std_msgs geometry_msgs
+6. cd ~/turtle_pong_ws
+7. catkin_make
+8. source devel/setup.bash
+9. cd ~/turtle_pong_ws/src/turtle_pong
+10. mkdir scripts
+11. touch scripts/turtle_pong.py
+12. chmod +x scripts/turtle_pong.py
+13. nano ~/turtle_pong_ws/src/turtle_pong/scripts/turtle_pong.py
+14. roscore
+15. rosrun turtlesim turtlesim_node
+16. cd ~/turtle_pong_ws
+17. catkin_make
+18. source devel/setup.bash
+19. rosrun turtle_pong turtle_pong.py
